@@ -1,0 +1,12 @@
+header.header1{background:#ffffff;box-shadow: 0px 5px 5px #888888;}
+
+
+header.header1 nav{width:61.8%;margin:0 auto;}
+
+header.header1 figure{display: inline-block;}
+header.header1 figure img{height:128px;}
+header.header1 figure figcaption{text-align: center;}
+
+header.header1 nav ul{display: inline-block;margin-left:10%}
+header.header1 nav li{display: inline-block;list-style: none;width:100px;line-height:61.8px;text-align: center;border-radius: 50%;}
+header.header1 nav li:hover{background:#99CCFF;cursor:pointer;}
