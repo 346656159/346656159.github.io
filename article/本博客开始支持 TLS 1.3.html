@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<head>
+    <title>如何为 ThinkJS 3 网站优化 TTFB 时间</title>
+    <link rel="stylesheet" href="/css/nav.css">
+    <link rel="stylesheet" href="/css/aside.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <style>
+        pre{white-space: pre-line;}
+        article{font-size: 1.5em;}
+        article h1,article p,article pre{margin:35px;}
+    </style>
+
+    <script src="/js/nav.js"></script>
+</head>
+<html>
+    <body>
+        <div class="container">
+            <main>
+                <article>
+                    <h1>本博客开始支持 TLS 1.3</h1>
+                    <pre>
+                            几个月前，我在升级本博客所用 Nginx 时，顺手加上了对 TLS 1.3 的支持，本文贴出详细的步骤和注意事项。有关 TLS 1.3 的介绍可以看 CloudFlare 的这篇文章：An overview of TLS 1.3 and Q&A。需要注意目前 Chrome 和 Firefox 支持的是 TLS 1.3 draft 18，暂时不要用在生产环境。
+
+                            更新：目前 Chrome 70 已经支持 TLS 1.3 final，本文已更新。@ 2018/10/19
+                            
+                            安装依赖
+                            我的 VPS 系统是 Ubuntu 16.04.3 LTS，如果你使用其它发行版，与包管理有关的命令请自行调整。
+                            
+                            首先安装依赖库和编译要用到的工具：
+                            
+                            sudo apt-get install build-essential libpcre3 libpcre3-dev zlib1g-dev unzip git
+                            获取必要组件
+                            nginx-ct 和 ngx-brotli 与本文主题无关，不过都是常用的 Nginx 组件，一并记录在这里。
+                            
+                            nginx-ct
+                            nginx-ct 模块用于启用 Certificate Transparency 功能。直接从 github 上获取源码：
+                            
+                            wget -O nginx-ct.zip -c https://github.com/grahamedgecombe/nginx-ct/archive/v1.3.2.zip
+                            unzip nginx-ct.zip
+                            注：大家常用的 Let's Encrypt 证书已内置 SCTs，nginx-ct 模块基本退出历史舞台了。
+                            
+                            ngx_brotli
+                            本站支持 Google 开发的 Brotli 压缩格式，它通过内置分析大量网页得出的字典，实现了更高的压缩比率，同时几乎不影响压缩 / 解压速度。
+                            
+                            以前要想支持 ngx_brotli 模块，需要先手动编译 libbrotli。经评论里的朋友提醒，现在已经不用了。直接获取源码即可：
+                            
+                            BASH
+                            git clone https://github.com/google/ngx_brotli.git
+                            cd ngx_brotli
+                            
+                            git submodule update --init
+                            
+                            cd ../
+                            OpenSSL
+                            为了支持 TLS 1.3 final，需要使用 OpenSSL 1.1.1 正式版：
+                            
+                            BASH
+                            wget -c  https://github.com/openssl/openssl/archive/OpenSSL_1_1_1.tar.gz
+                            tar xzf OpenSSL_1_1_1.tar.gz
+                            mv openssl-OpenSSL_1_1_1 openssl
+                            编译并安装 Nginx
+                            接着就可以获取 Nginx 源码，编译并安装：
+                            
+                            BASH
+                            wget -c http://nginx.org/download/nginx-1.15.2.tar.gz
+                            tar zxf nginx-1.15.2.tar.gz
+                            
+                            cd nginx-1.15.2
+                            
+                            ./configure --add-module=../ngx_brotli --with-openssl=../openssl --with-openssl-opt='enable-tls1_3 enable-weak-ssl-ciphers' --with-http_v2_module --with-http_ssl_module --with-http_gzip_static_module
+                            
+                            make
+                            sudo make install
+                            enable-tls1_3 是让 OpenSSL 支持 TLS 1.3 的关键选项；而 enable-weak-ssl-ciphers 的作用是让 OpenSSL 继续支持 3DES 等不安全的 Cipher Suite，如果你打算继续支持 IE8，才需要加上这个选项。
+                            
+                            除了 http_v2 和 http_ssl 这两个 HTTP/2 必备模块之外，我还额外启用了 http_gzip_static，需要启用哪些模块需要根据自己实际情况来决定。
+                            
+                            以上步骤会把 Nginx 装到 /usr/local/nginx/ 目录，如需更改路径可以在 configure 时指定。
+                            
+                            WEB 站点配置
+                            在 Nginx 的站点配置中，以下两个参数需要修改：
+                            
+                            ssl_protocols              TLSv1 TLSv1.1 TLSv1.2 TLSv1.3; # 增加 TLSv1.3
+                            ssl_ciphers                TLS13-AES-256-GCM-SHA384:TLS13-CHACHA20-POLY1305-SHA256:TLS13-AES-128-GCM-SHA256:TLS13-AES-128-CCM-8-SHA256:TLS13-AES-128-CCM-SHA256:EECDH+CHACHA20:EECDH+CHACHA20-draft:EECDH+ECDSA+AES128:EECDH+aRSA+AES128:RSA+AES128:EECDH+ECDSA+AES256:EECDH+aRSA+AES256:RSA+AES256:EECDH+ECDSA+3DES:EECDH+aRSA+3DES:RSA+3DES:!MD5;
+                            包含 TLS13 是 TLS 1.3 新增的 Cipher Suite，加在最前面即可；如果你不打算继续支持 IE8，可以去掉包含 3DES 的 Cipher Suite。
+                            
+                            本博客完整的 Nginx 配置，请点击这里查看。
+                            
+                            验证是否支持 TLS 1.3
+                            目前最新版 Chrome 和 Firefox 都支持 TLS 1.3，但需要手动开启：
+                            
+                            Chrome，将 chrome://flags/ 中的 Maximum TLS version enabled 改为 TLS 1.3（Chrome 62 中需要将 TLS 1.3 改为 Enabled (Draft)，感谢 @TsuranSonoda 指出）；
+                            Firefox，将 about:config 中的 security.tls.version.max 改为 4；
+                            本博客多次推荐的 Qualys SSL Labs's SSL Server Test 也支持验证服务端是否支持 TLS 1.3，非常方便，继续推荐。
+                    </pre>
+                </article>
+            </main>
+        </div>
+        <div style="clear: both;"></div>
+
+
+
+
+        <script src="/js/aside.js"></script>
+        <script src="/js/footer.js"></script>
+    </body>
+</html>

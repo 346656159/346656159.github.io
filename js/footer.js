@@ -1,6 +1,6 @@
 
 const str_footer='<div class="top">\
-<a href="#top"><img src="images/3.png" /></a>\
+<a href="#top"><img src="/images/3.png" /></a>\
 </div>\
 <footer>\
 <p>Copyright © 2020 zhaowei. </p>\

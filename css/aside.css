@@ -1,1 +1,10 @@
-div.container aside{width:23%;float:right;background:#ffffff;margin-top:4%;}
+div.container aside{width:23%;float:right;margin-top:4%;}
+div.container aside div{margin-top:10px}
+div.container aside div.hot{background: #ffffff;padding:10px;border-radius: 10px;}
+div.container aside div.hot h4{margin:10px 0;color:#78838a;}
+div.container aside div.hot li{list-style-type: none;margin:10px 0;font-size: .9em;color:#78838a;}
+div.container aside img{width:100%}
+
+div.container aside div.tag{background: #ffffff;padding:10px;border-radius: 10px;line-height: 2.5;}
+div.container aside div.tag h4{margin-bottom:10px;}
+div.container aside div.tag a{border-radius: 50%;background:#cfdadd;color:#ffffff;margin:5px;padding:5px;font-size: .5em;}
