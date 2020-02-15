@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<head>
+    <title>centos7开启BBR</title>
+    <link rel="stylesheet" href="/css/nav.css">
+    <link rel="stylesheet" href="/css/aside.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <style>
+        pre{white-space: pre-line;}
+        article{font-size: 1.5em;background:#ffffff;margin-top:2%;padding:35px;border-radius:25px;}
+        article h1,article p,article pre{margin:35px;}
+    </style>
+
+    <script src="/js/nav.js"></script>
+</head>
+<html>
+    <body>
+        <div class="container">
+            <main>
+                <article>
+                    <h1>centos7开启BBR</h1>
+                    <pre>
+                        升级内核一键脚本,如果是linux4.9以上内核请跳过此步骤：
+                        <code>yum install -y https://mirrors.ustc.edu.cn/elrepo/kernel/el7/x86_64/RPMS/kernel-ml-5.4.8-1.el7.elrepo.x86_64.rpm
+                        grub2-set-default 'CentOS Linux (5.4.8-1.el7.elrepo.x86_64) 7 (Core)' #修改为最新的内核启动
+                        reboot</code>
+                        
+                        详细步骤升级CentOS7内核,:(参考网页https://www.liuboping.com/%E5%BC%80%E5%90%AFtcp-bbr%E6%8B%A5%E5%A1%9E%E6%8E%A7%E5%88%B6%E7%AE%97%E6%B3%95/)
+                        最新内核查看这里https://elrepo.org/linux/kernel/el7/x86_64/RPMS/
+                        1.下载更换内核:
+                               rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
+                               rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-3.el7.elrepo.noarch.rpm
+                               yum --enablerepo=elrepo-kernel install kernel-ml -y
+                               查看内核是否安装成功:rpm -qa | grep kernel
+                               删除旧内核(可选):rpm -ev 旧内核  
+                               或者中科大源安装 
+                               yum install -y https://mirrors.ustc.edu.cn/elrepo/kernel/el7/x86_64/RPMS/kernel-ml-5.4.8-1.el7.elrepo.x86_64.rpm
+                              grub2-set-default 'CentOS Linux (5.4.8-1.el7.elrepo.x86_64) 7 (Core)' #修改为最新的内核启动  
+                              reboot
+                        2.更新 grub 系统引导文件并重启:
+                               egrep ^menuentry /etc/grub2.cfg | cut -f 2 -d \'
+                               grub2-set-default 0  # default 0 表示第一个内核设置为默认运行, 选择最新内核就对了
+                               reboot
+                               注意，某些服务商（如 Digital Ocean）可能需要首先将 VPS 配置为可自定义内核，然后 grub2 的配置才会生效。
+                               重新启动后，如果会出现 “read-only file system” 的错误，root账户下执行 mount -o remount rw / 即可
+                               开机后 uname -r 看看是不是内核 >= 4.9
+                               查看内核是否安装成功:rpm -qa | grep kernel
+                               grub2-editenv list #查看当前默认内核  
+                               awk -F \' '$1=="menuentry " {print i++ " : " $2}' /etc/grub2.cfg #查看所有内核启动
+                        
+                               开启BBR一键脚本：
+                               echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+                               echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+                               sysctl -p
+                               
+                        linux4.9以上内核开启BBR详细步骤：
+                        修改系统变量:echo "net.core.default_qdisc=fq" >> /etc/sysctl.conf
+                                    echo "net.ipv4.tcp_congestion_control=bbr" >> /etc/sysctl.conf
+                               保存:sysctl -p
+                        执行下面,如果结果都有 bbr, 则证明你的内核已开启 bbr
+                                sysctl net.ipv4.tcp_available_congestion_control
+                                sysctl net.ipv4.tcp_congestion_control
+                        执行:lsmod | grep bbr, 看到有 tcp_bbr 模块即说明 bbr 已启动，如果结果中没有 tcp_bbr 的话就先执行: modprobe tcp_bbr 
+                                                                                                                     echo "tcp_bbr" >> /etc/modules-load.d/modules.conf
+                        参考文章：https://www.moerats.com/archives/297/
+                    </pre>
+                </article>
+            </main>
+        </div>
+        <div style="clear: both;"></div>
+
+
+
+
+        <script src="/js/aside.js"></script>
+        <script src="/js/footer.js"></script>
+    </body>
+</html>

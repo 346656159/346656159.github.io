@@ -5,9 +5,9 @@ const str_aside='<aside>\
 <div class="hot">\
     <h4>热门文章</h4>\
     <ul>\
-        <li><a href="">如何为 ThinkJS 3 网站优化 TTFB 时间</a></li>\
-        <li><a href="">本博客开始支持 TLS 1.3</a></li>\
-        <li><a href="">HTTPS 常见部署问题及解决方案</a></li>\
+        <li><a href="/article/CentOS6、CentOS7、debian安装SS.html">CentOS6、CentOS7、debian安装SS</a></li>\
+        <li><a href="/article/centos7安装SSR.html">centos7安装SSR</a></li>\
+        <li><a href="/article/centos7开启BBR.html">centos7开启BBR</a></li>\
     </ul>\
 </div>\
 <div class="tag">\

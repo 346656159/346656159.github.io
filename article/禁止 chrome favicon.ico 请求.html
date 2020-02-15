@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<head>
+    <title>禁止 chrome favicon.ico 请求</title>
+    <link rel="stylesheet" href="/css/nav.css">
+    <link rel="stylesheet" href="/css/aside.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <style>
+        pre{white-space: pre-line;}
+        article{font-size: 1.5em;background:#ffffff;margin-top:2%;padding:35px;border-radius:25px;}
+        article h1,article p,article pre{margin:35px;}
+    </style>
+
+    <script src="/js/nav.js"></script>
+</head>
+<html>
+    <body>
+        <div class="container">
+            <main>
+                <article>
+                    <h1>禁止 chrome favicon.ico 请求</h1>
+                    <pre>
+                        在响应主体里加一个字符串&lt;link rel="icon" href="data:;base64,"	&gt;
+                        直接访问url时favicon.ico请求在各浏览器的实现是不同的
+                        chrome   每次访问请求(自动)
+                        firefox  第一次访问请求(自动)
+                        ie  不请求（需页面设置)
+                        
+                        火狐浏览器:
+                        about:config
+                        将browser.chrome.site_icons设置为false即可
+                    </pre>
+                </article>
+            </main>
+        </div>
+        <div style="clear: both;"></div>
+
+
+
+
+        <script src="/js/aside.js"></script>
+        <script src="/js/footer.js"></script>
+    </body>
+</html>

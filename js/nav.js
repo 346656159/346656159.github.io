@@ -6,8 +6,7 @@ const str_nav='        <header class="header1">\
     </figure>\
     <ul>\
             <li><a href="/">首页</a></li>\
-            <li><a href="">分类</a></li>\
-            <li><a href="">文章</a></li>\
+            <li><a href="/category.html">文章分类</a></li>\
             <li><a href="/links.html">友链</a></li>\
             <li><a href="/about.html">关于</a></li>\
     </ul>\

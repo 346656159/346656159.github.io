@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<head>
+    <title>centos7安装SSR</title>
+    <link rel="stylesheet" href="/css/nav.css">
+    <link rel="stylesheet" href="/css/aside.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <style>
+        pre{white-space: pre-line;}
+        article{font-size: 1.5em;background:#ffffff;margin-top:2%;padding:35px;border-radius:25px;}
+        article h1,article p,article pre{margin:35px;}
+    </style>
+
+    <script src="/js/nav.js"></script>
+</head>
+<html>
+    <body>
+        <div class="container">
+            <main>
+                <article>
+                    <h1>centos7安装SSR</h1>
+                    <pre>
+                        SSR一键脚本：
+                        <code>firewall-cmd --permanent --add-port=443/tcp    
+                        firewall-cmd --reload
+                        yum install -y git
+                        git clone https://github.com/shadowsocksrr/shadowsocksr.git
+                        cd shadowsocksr
+                        bash  initcfg.sh
+                        #cd ~/shadowsocksr/shadowsocks
+                        #python ~/shadowsocksr/shadowsocks/server.py -p 443 -k 密码 -m aes-256-cfb -O auth_chain_b -o tls1.2_ticket_auth //密码自己改
+                        sed -i 's/"server_port": 8388/"server_port": 443/'  ~/shadowsocksr/user-config.json
+                        sed -i 's/"password": "m"/"password": "密码"/'  ~/shadowsocksr/user-config.json  //密码自己改
+                        sed -i 's/"method": "aes-128-ctr"/"method": "aes-256-cfb"/'  ~/shadowsocksr/user-config.json
+                        sed -i 's/"protocol": "auth_aes128_md5"/"protocol": "auth_chain_b"/'  ~/shadowsocksr/user-config.json
+                        ~/shadowsocksr/shadowsocks/logrun.sh</code>
+                        
+                        详细安装步骤:
+                        关闭防火墙:systemctl stop firewalld.service
+                        1.原版ss和ssr的仓库都被移除了，要找别人的备份安装，在此网址上找https://blog.jimmyho.net/archives/365/
+                        2.CentOS安装git：yum install  -y git
+                        3.克隆代码到本地：git clone https://github.com/shadowsocksrr/shadowsocksr.git
+                                                    选用的不同备份仓库，需要更改克隆地址，例如git clone https://github.com/shadowsocksr-rm/shadowsocksr.git
+                                                                                          git clone https://github.com/shadowsocksr-backup/shadowsocksr.git
+                        4.进入shadowsocksr文件夹：cd shadowsocksr
+                        5.执行initcfg.sh文件：bash initcfg.sh
+                        6.进入~/shadowsocksr/shadowsocks文件夹：cd ~/shadowsocksr/shadowsocks
+                        7.运行ssr：python server.py -p 端口 -k 密码 -m 加密方式 -O 协议插件 -o 混淆插件
+                                         fedora会提示找不到python命令，原因未知
+                           或者使用配置文件：编辑user-config.json文件:vi ~/shadowsocksr/user-config.json
+                                                 敲入命令python server.py
+                                                 文件配置详细说明https://github.com/Ssrbackup/shadowsocks-rss/wiki/config.json
+                        9.后台运行：./logrun.sh
+                        10.停止：./stop.sh
+                        11.查看日志：./tail.sh
+                        混淆插件和协议定义插件参数介绍：https://www.i5seo.com/shadowsocksr-protocol-plug-in-document.html 
+                    </pre>
+                </article>
+            </main>
+        </div>
+        <div style="clear: both;"></div>
+
+
+
+
+        <script src="/js/aside.js"></script>
+        <script src="/js/footer.js"></script>
+    </body>
+</html>

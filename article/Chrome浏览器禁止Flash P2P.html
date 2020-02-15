@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<head>
+    <title>Chrome浏览器禁止Flash P2P</title>
+    <link rel="stylesheet" href="/css/nav.css">
+    <link rel="stylesheet" href="/css/aside.css">
+    <link rel="stylesheet" href="/css/footer.css">
+    <style>
+        pre{white-space: pre-line;}
+        article{font-size: 1.5em;background:#ffffff;margin-top:2%;padding:35px;border-radius:25px;}
+        article h1,article p,article pre{margin:35px;}
+    </style>
+
+    <script src="/js/nav.js"></script>
+</head>
+<html>
+    <body>
+        <div class="container">
+            <main>
+                <article>
+                    <h1>Chrome浏览器禁止Flash P2P</h1>
+                    <pre>
+                        对于 Chrome 浏览器,Flash 全局设置中的 P2P 传输选项并不能有效的禁止上传。必须使用以下方法予以禁止：
+                        1.打开 chrome://version ，查看个人资料路径
+                        2.在资源管理器中打开个人资料路径C:\Users\Administrator\AppData\Local\Google\Chrome\User Data\Default，定位至 \Pepper Data\Shockwave Flash 文件夹，如果没有这个文件夹就新建
+                        
+                        3.在 Shockwave Flash 文件夹下新建 System 文件夹
+                        
+                        4.新建一个名为 mms.cfg 的文件，内容如下：
+                        
+                        RTMFPP2PDisable=1
+                        5.重新启动 Chrome 浏览器，Flash P2P 功能就被彻底关闭了。
+                        参考网页https://roov.org/2016/01/chrome-disable-flash-p2p/
+                    </pre>
+                </article>
+            </main>
+        </div>
+        <div style="clear: both;"></div>
+
+
+
+
+        <script src="/js/aside.js"></script>
+        <script src="/js/footer.js"></script>
+    </body>
+</html>
